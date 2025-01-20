@@ -165,10 +165,8 @@ class GameSnake:
     def speed(self, key):  # Функция задает скорость движения змейки
         if key == '+' and self.snake_speed >= 1 and self.snake_speed < 20:
             self.snake_speed += 1
-            print(self.snake_speed)
         elif key == '-' and self.snake_speed > 1 and self.snake_speed <= 20:
             self.snake_speed -= 1
-            print(self.snake_speed)
 
     def pause(self):
         if self.moving_game_id is not None:
@@ -239,7 +237,7 @@ class GameSnake:
     @staticmethod
     def about_program():
         messagebox.showinfo("О программе",
-                            'Игра змейка"' "\n(c) Tishkov G.V., Russia, 2025")
+                            '"Игра змейка"' "\n(c) Tishkov G.V., Russia, 2025")
 
     def status_bar(self):
         self.status = Label(
