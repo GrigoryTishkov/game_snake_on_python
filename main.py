@@ -97,7 +97,8 @@ class GameSnake:
                     self.save_score = self.snake.score
                     self.save_scorefile()
                     self.update_status_bar()
-            if self.game_mode == Constant.GM_NORMAL.value and self.snake.check_wall_collision() or self.snake.check_self_collision():
+            if self.game_mode == Constant.GM_NORMAL.value and self.snake.check_wall_collision() \
+                    or self.snake.check_self_collision():
                 self.running = False
             elif self.game_mode == Constant.GM_WITHOUT_WALL.value and self.snake.check_self_collision():
                 self.running = False
@@ -229,14 +230,16 @@ class GameSnake:
 
     def status_bar(self):
         self.status = Label(
-            text=f' Счет: {self.snake.score}  |  Рекорд:  {self.save_score}  |   F1 - Справка   |  Ctrl + R - Рестарт  | Ctrl + X - Выход  |  Режим Игры: Не Установлен',
+            text=f' Счет: {self.snake.score}  |  Рекорд:  {self.save_score}  |   F1 - Справка   |  Ctrl + R - Рестарт '
+                 f' | Ctrl + X - Выход  |  Режим Игры: Не Установлен',
             bd=1, relief=SUNKEN, anchor=W, bg='#38a3a5', fg='#132a13')
         self.status.pack(side=BOTTOM, fill=X)
 
     def update_status_bar(self):
         if self.status:
             self.status.config(
-                text=f' Счет: {self.snake.score}  |  Рекорд:  {self.save_score}  |   F1 - Справка   |  Ctrl + R - Рестарт  | Ctrl + X - Выход  |  Режим Игры: {self.game_mode}')
+                text=f' Счет: {self.snake.score}  |  Рекорд:  {self.save_score}  |   F1 - Справка  '
+                     f' |  Ctrl + R - Рестарт  | Ctrl + X - Выход  |  Режим Игры: {self.game_mode}')
 
 
 class Snake:
