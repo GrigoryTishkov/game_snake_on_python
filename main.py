@@ -291,7 +291,9 @@ class Snake:
     def change_position(self, x, y):  # Изменение позиции змейки на экране по векторам
         if self.position is None:
             self.position = (x, y)
-        elif (x, y) != (-self.position[0], -self.position[1]):
+        elif (x, y) != (-self.position[0], -self.position[1]) and len(self.body) > 1:
+            self.position = (x, y)
+        elif len(self.body) == 1:  # Если размер в одну клеточку, она имеет право менять своё направление моментально
             self.position = (x, y)
 
     def add_element(self):
