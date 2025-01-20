@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from random import *
 from enum import *
+import platform
 import os
 
 
@@ -36,6 +37,8 @@ class GameSnake:
         self.window = window
         self.window.title("ИГРА ЗМЕЙКА")
         self.window.resizable(False, False)
+        self.windows_version = self.get_windows_version()
+        self.state_value = 12 if self.windows_version == "Windows 10" else 4
         self.snake = Snake()
         self.food = Food(self)
         self.save_score = self.load_scorefile()
@@ -52,7 +55,15 @@ class GameSnake:
         self.show_mode_selection()
         self.window.bind("<KeyPress>", self.bind_buttons)
 
-    def show_mode_selection(self):
+    def get_windows_version(self):  # Получение версии windows так как на Win 10 кнопка Ctrl соответствует event.state
+        # == 12, в то время как на Win 11 соответствует 4
+        version = platform.version()
+        if version >= '10.0.22000':
+            return "Windows 11"
+        elif version.startswith('10.'):
+            return "Windows 10"
+
+    def show_mode_selection(self):  # Функция показывает кнопки выбора режима перед началом игры
         self.canvas.create_text(Constant.WINDOW_WIDTH.value // 2, Constant.WINDOW_HEIGHT.value // 2 - 20,
                                 font="Arial 14", text="Выберите режим игры:", fill="white")
 
@@ -67,11 +78,11 @@ class GameSnake:
                                                                Constant.WINDOW_HEIGHT.value // 2 + 60,
                                                                window=button_without_wall)
 
-    def set_game_mode(self, mode):
+    def set_game_mode(self, mode):  # Установка соответствующего режима игры
         self.game_mode = mode
         self.reload_game()
 
-    def start_game(self):
+    def start_game(self):  # Функция старта игры, в которой задаются начальные параметры
         if self.game_mode is None:
             return
         self.snake = Snake()
@@ -83,7 +94,7 @@ class GameSnake:
         # self.window.bind("<KeyPress>", self.bind_buttons)
         self.moving_game()
 
-    def moving_game(self):
+    def moving_game(self):  # Цикл движения змейки и пересоздания еды
         if self.running:
             if self.game_mode == Constant.GM_NORMAL.value:
                 self.snake.move()
@@ -134,9 +145,9 @@ class GameSnake:
             self.snake.change_position(0, 1)
         if event.keysym.lower() == "d" or event.char.lower() == "в":
             self.snake.change_position(1, 0)
-        if event.keycode == 88 and event.state == 12:  # Проверка, нажата ли клавиша Control
+        if event.keycode == 88 and event.state == self.state_value:  # Закрытие игры
             self.close_game()
-        if event.keycode == 82 and event.state == 12:
+        if event.keycode == 82 and event.state == self.state_value:  # Перезагрузка игры
             self.reload_game()
         if event.keysym == "F1":
             self.about_program()
@@ -151,7 +162,7 @@ class GameSnake:
         if event.keycode == 78:
             self.set_game_mode(Constant.GM_NORMAL.value)
 
-    def speed(self, key):
+    def speed(self, key):  # Функция задает скорость движения змейки
         if key == '+' and self.snake_speed >= 1 and self.snake_speed < 20:
             self.snake_speed += 1
             print(self.snake_speed)
@@ -177,7 +188,8 @@ class GameSnake:
             self.moving_game_id = None
         self.start_game()
 
-    def load_scorefile(self):
+    @staticmethod
+    def load_scorefile():  # Загрузка счета змейки
         if os.path.exists("highscore.txt"):
             with open("highscore.txt", encoding="UTF-8") as file:
                 return int(file.read().strip())
@@ -186,7 +198,7 @@ class GameSnake:
                 file.write("0")
                 return 0
 
-    def save_scorefile(self):
+    def save_scorefile(self):  # Запись счета змейки
         if os.path.exists("highscore.txt"):
             with open("highscore.txt", "w", encoding="UTF-8") as file:
                 file.write(str(self.snake.score))
@@ -224,7 +236,8 @@ class GameSnake:
         Button(content_window, text="Выход", command=content_window.destroy).pack(side=BOTTOM, anchor=SE, padx=10,
                                                                                   pady=10)
 
-    def about_program(self):
+    @staticmethod
+    def about_program():
         messagebox.showinfo("О программе",
                             'Игра змейка"' "\n(c) Tishkov G.V., Russia, 2025")
 
@@ -249,7 +262,7 @@ class Snake:
         self.grow = False
         self.score = 0
 
-    def move(self):
+    def move(self):  # Движение змейки в игре со стенами
         if self.position is not None:
             head_x, head_y = self.body[0]
             pos_x, pos_y = self.position
@@ -275,7 +288,7 @@ class Snake:
             self.body.insert(0, new_head)
             self.body.pop()
 
-    def change_position(self, x, y):
+    def change_position(self, x, y):  # Изменение позиции змейки на экране по векторам
         if self.position is None:
             self.position = (x, y)
         elif (x, y) != (-self.position[0], -self.position[1]):
